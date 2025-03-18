@@ -1,0 +1,36 @@
+{% extends 'todo/base.html' %}
+
+{% block title %}Delete Todo - Todo App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header border-0">
+                <h2 class="text-center mb-0">
+                    <i class="fas fa-trash-alt me-2 text-danger"></i>
+                    Delete Todo
+                </h2>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-4">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                    <p class="lead mb-0">Are you sure you want to delete</p>
+                    <p class="h5 text-danger mt-2">"{{ todo.title }}"?</p>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="fas fa-trash-alt me-2"></i>Delete
+                        </button>
+                        <a href="{% url 'todo_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Go Back
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
