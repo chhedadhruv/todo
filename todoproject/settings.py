@@ -12,10 +12,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
-from dotenv import load_dotenv
+from .settings_config import get_settings
 
-# Load environment variables
-load_dotenv()
+# Get settings from pydantic
+settings = get_settings()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,14 +25,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-your-secret-key-here')
+SECRET_KEY = settings.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = settings.DEBUG
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = settings.allowed_hosts
 
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000').split(',')
+CSRF_TRUSTED_ORIGINS = settings.csrf_trusted_origins
 
 
 # Application definition
@@ -47,11 +47,13 @@ INSTALLED_APPS = [
     'todo.apps.TodoConfig',
     'crispy_forms',
     'crispy_bootstrap5',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -59,6 +61,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# CORS settings
+CORS_ORIGIN_WHITELIST = settings.cors_origin_whitelist
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'todoproject.urls'
 
@@ -86,8 +92,12 @@ WSGI_APPLICATION = 'todoproject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': settings.DB_NAME,
+        'USER': settings.DB_USER,
+        'PASSWORD': settings.DB_PASSWORD,
+        'HOST': settings.DB_HOST,
+        'PORT': settings.DB_PORT,
     }
 }
 
@@ -133,6 +143,10 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -143,25 +157,26 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Login/Logout URLs
-LOGIN_REDIRECT_URL = 'todo_list'
-LOGOUT_REDIRECT_URL = 'login'
-LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = settings.LOGIN_REDIRECT_URL
+LOGOUT_REDIRECT_URL = settings.LOGOUT_REDIRECT_URL
+LOGIN_URL = settings.LOGIN_URL
 
 # Security Settings
-SECURE_SSL_REDIRECT = not DEBUG
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-X_FRAME_OPTIONS = 'DENY'
-SECURE_HSTS_SECONDS = 31536000
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+SECURE_SSL_REDIRECT = settings.SECURE_SSL_REDIRECT
+SESSION_COOKIE_SECURE = settings.SESSION_COOKIE_SECURE
+CSRF_COOKIE_SECURE = settings.CSRF_COOKIE_SECURE
+SECURE_BROWSER_XSS_FILTER = settings.SECURE_BROWSER_XSS_FILTER
+SECURE_CONTENT_TYPE_NOSNIFF = settings.SECURE_CONTENT_TYPE_NOSNIFF
+X_FRAME_OPTIONS = settings.X_FRAME_OPTIONS
+SECURE_HSTS_SECONDS = settings.SECURE_HSTS_SECONDS
+SECURE_HSTS_INCLUDE_SUBDOMAINS = settings.SECURE_HSTS_INCLUDE_SUBDOMAINS
+SECURE_HSTS_PRELOAD = settings.SECURE_HSTS_PRELOAD
+SECURE_PROXY_SSL_HEADER = (settings.SECURE_PROXY_SSL_HEADER_NAME, settings.SECURE_PROXY_SSL_HEADER_VALUE)
 
 # Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_BACKEND = settings.EMAIL_BACKEND
+EMAIL_HOST = settings.EMAIL_HOST
+EMAIL_PORT = settings.EMAIL_PORT
+EMAIL_USE_TLS = settings.EMAIL_USE_TLS
+EMAIL_HOST_USER = settings.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = settings.EMAIL_HOST_PASSWORD
