@@ -2,10 +2,12 @@ Django==5.0.2
 python-dotenv==1.0.1
 django-crispy-forms==2.1
 crispy-bootstrap5==2024.2
-Pillow==10.2.0
+Pillow
 django-allauth==0.61.1
 whitenoise==6.6.0
 gunicorn==21.2.0
-psycopg2-binary==2.9.9
+psycopg[binary]
 pydantic-settings==2.2.1
-django-cors-headers==4.3.1 
+django-cors-headers==4.3.1
+djangorestframework==3.14.0
+djangorestframework-simplejwt==5.3.1 

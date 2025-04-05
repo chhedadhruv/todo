@@ -9,7 +9,9 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALLOWED_HOSTS: str
     CSRF_TRUSTED_ORIGINS: str
-    CORS_ORIGIN_WHITELIST: str
+    CORS_ORIGIN_WHITELIST: str = ""
+    CORS_ALLOW_ALL_ORIGINS: bool = True
+    CORS_ALLOW_CREDENTIALS: bool = True
     
     # Database settings
     DB_NAME: str
@@ -62,6 +64,7 @@ class Settings(BaseSettings):
         env_file='.env',
         env_file_encoding='utf-8',
         case_sensitive=True,
+        extra='ignore'  # This will ignore extra fields in the .env file
     )
 
 
